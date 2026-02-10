@@ -9,9 +9,11 @@
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
+            <script src="https://kit.fontawesome.com/8fc34c95c8.js" crossorigin="anonymous"></script>
         {% endblock %}
     </head>
     <body>
+    <h1>Hello bucket (list)</h1>
         {% block body %}{% endblock %}
     </body>
 </html>
