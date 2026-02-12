@@ -54,3 +54,10 @@ article{
     height:30px;
 }
 
+a {
+    text-decoration: none;
+    color:white;
+}
+.img-about-container{
+    text-align: center;
+}
