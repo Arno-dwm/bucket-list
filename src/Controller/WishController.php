@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\WishRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,14 +17,21 @@ final class WishController extends AbstractController
         ['id' => 4, 'libelle' => "Aller dans l'espace", 'class' => "fa-solid fa-rocket"]
     ];
     #[Route('/wish', name: 'app_wish')]
-    public function index(): Response
+    public function index(WishRepository $wishRepository): Response
     {
-        return $this->render('wish/wish.html.twig', ['wishes' => self::wishes]);
+        $wishes2 = $wishRepository->findBy([], ['dateCreated' => 'ASC']);
+        $wishes = $wishRepository->findAll();
+        return $this->render('wish/wish.html.twig', ['wishes' => $wishes2]);
     }
 
     #[Route('/wish/{id}', name: 'app_wish_detail', requirements: ['id' => '\d+'])]
-    public function detail($id): Response
+    public function detail(WishRepository $wishRepository, int $id): Response
     {
-        return $this->render('wish/details.html.twig');
+        $wish = $wishRepository->find($id);
+        //Se prémunir contre un id renseigné qui sort de la base
+        if(!$wish){
+            throw $this->createNotFoundException("Ce wish n'existe pas.");
+        }
+        return $this->render('wish/details.html.twig', ['wish' => $wish]);
     }
 }
