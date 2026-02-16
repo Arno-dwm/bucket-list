@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Wish;
+use App\Form\WishType;
 use App\Repository\WishRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -19,7 +23,7 @@ final class WishController extends AbstractController
     #[Route('/wish', name: 'app_wish')]
     public function index(WishRepository $wishRepository): Response
     {
-        $wishes2 = $wishRepository->findBy([], ['dateCreated' => 'ASC']);
+        $wishes2 = $wishRepository->findBy(['isPublished' => true], ['dateCreated' => 'DESC']);
         $wishes = $wishRepository->findAll();
         return $this->render('wish/wish.html.twig', ['wishes' => $wishes2]);
     }
@@ -33,5 +37,27 @@ final class WishController extends AbstractController
             throw $this->createNotFoundException("Ce wish n'existe pas.");
         }
         return $this->render('wish/details.html.twig', ['wish' => $wish]);
+    }
+
+    #[Route('/wish/creer', name: 'app_wish_creer')]
+    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $wish = new Wish();
+        $wishForm = $this->createForm(WishType::class, $wish);
+        $wishForm->handleRequest($request);
+
+        if($wishForm->isSubmitted() && $wishForm->isValid()){
+           //ajouter image et classe par défaut
+            $wish->setUrl('default');
+            $wish->setDateCreated(new \DateTime());
+            $wish->setClass("fa-regular fa-star");
+            $entityManager->persist($wish);
+            $entityManager->flush();
+
+            $this->addFlash('success','Un nouveau souhait a été enregistré');
+            return $this->redirectToRoute('app_wish');
+        }
+
+        return $this->render('wish/creer-wish.html.twig', ['wish_form' => $wishForm]);
     }
 }

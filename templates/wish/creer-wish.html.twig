@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% form_theme wish_form 'bootstrap_5_layout.html.twig' %}
+{% block title %}Page d'accueil{% endblock %}
+{% block body%}
+    <h2>Créer un wish</h2>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            {{ form(wish_form) }}
+        </div>
+    </div>
+
+
+
+{% endblock %}

@@ -9,8 +9,14 @@
             <div class="navbar-nav nav-container">
                 <a class="nav-item nav-link active" href="{{path('app_main')}}">Home</a>
                 <a class="nav-item nav-link" href="{{ path('app_wish') }}">Liste de souhaits</a>
+                <a class="nav-item nav-link" href="{{ path('app_wish_creer') }}">Make a wish</a>
                 <a class="nav-item nav-link" href="{{path('app_about')}}">À propos</a>
             </div>
         </div>
     </nav>
+    {% for status, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ status }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
 </header>
