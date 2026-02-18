@@ -6,7 +6,11 @@
     <p class="wish-info">Created by {{ wish.author }} on {{ wish.dateCreated | date('d/m/Y') }}</p>
     <p>{{ wish.description }}</p>
     <img src="{{ asset('images/'~wish.url~'.jpg') }}" alt="" />
+    {% for cat in wish.categories %}
+        <p>{{ cat.name }}</p>
+    {% endfor %}
     <button class="btn btn-danger">Supprimer</button>
     <button class="btn btn-secondary">Modifier</button>
+    <a href="{{ path('app_wish_add', {id : wish.id}) }}" class="btn btn-secondary">Ajouter catégorie</a>
 </div>
 {% endblock %}

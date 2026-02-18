@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Wish;
 use App\Form\WishType;
 use App\Repository\WishRepository;
@@ -25,6 +26,7 @@ final class WishController extends AbstractController
     {
         $wishes2 = $wishRepository->findBy(['isPublished' => true], ['dateCreated' => 'DESC']);
         $wishes = $wishRepository->findAll();
+        //A FAIRE : $wishes3 = $wishRepository->findPublishedWishesWithCategories();
         return $this->render('wish/wish.html.twig', ['wishes' => $wishes2]);
     }
 
@@ -59,5 +61,16 @@ final class WishController extends AbstractController
         }
 
         return $this->render('wish/creer-wish.html.twig', ['wish_form' => $wishForm]);
+    }
+
+    #[Route('/wish/add/{id}', name: 'app_wish_add')]
+    function ajouterCateg(int $id, EntityManagerInterface $entityManager){
+        $category = $entityManager->getRepository(Category::class)->find(2);
+        $wish = $entityManager->getRepository(Wish::class)->find($id);
+        $wish->addCategory($category);
+        $entityManager->persist($wish);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_wish');
     }
 }

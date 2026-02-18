@@ -6,7 +6,14 @@
 
     <ul>
         {% for item in wishes %}
-            <li class="list-item"><a href="{{ path('app_wish_detail', {id : item.id}) }}"><i class="{{ item.class }}"></i> {{ item.title }}</a></li>
+            <li class="list-item">
+                <a href="{{ path('app_wish_detail', {id : item.id}) }}"><i class="{{ item.class }}"></i>
+                    {{ item.title }}
+                    {% for cat in item.categories %}
+                        [{{ cat.name }}]
+                    {% endfor %}
+                </a>
+            </li>
         {% endfor %}
         <li class="list-item"><a href="{{ path('app_wish_creer') }}">+</a></li>
     </ul>
