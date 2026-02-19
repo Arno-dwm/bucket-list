@@ -13,10 +13,11 @@
     {% endfor %}
     {% if is_granted(('IS_AUTHENTICATED'))  %}
         {% if app.user.userIdentifier == wish.user.email %}
-            <button class="btn btn-secondary">Modifier</button>
+            <a href="{{ path('app_wish_update', {id: wish.id}) }}" class="btn btn-secondary">Modifier</a>
         {% endif %}
         {% if is_granted(('ROLE_ADMIN')) or app.user.userIdentifier == wish.author%}
-            <button class="btn btn-danger">Supprimer</button>
+
+            <a href="{{ path('app_wish_delete', {id : wish.id, token:csrf_token('wish_delete' ~ wish.id)}) }}" class="btn btn-danger" onclick="return confirm('Étes-vous sûr ?')">Supprimer</a>
         {% endif %}
     {% endif %}
 

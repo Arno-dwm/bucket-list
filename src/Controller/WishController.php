@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class WishController extends AbstractController
 {
@@ -66,6 +67,43 @@ final class WishController extends AbstractController
         return $this->render('wish/creer-wish.html.twig', ['wish_form' => $wishForm]);
     }
 
+    #[Route('wish/update/{id}', name:'app_wish_update', requirements: ['id'=>'\d+'])]
+    public function update(Request $request, Wish $wish, EntityManagerInterface $entityManager):Response{
+        $wishForm = $this->createForm(WishType::class, $wish);
+        $wishForm->handleRequest($request);
+
+        if($wishForm->isSubmitted() && $wishForm->isValid()){
+            $entityManager->flush();
+
+            $this->addFlash('success', "Le souhait {$wish->getTitle()} a été modifié");
+            return $this->redirectToRoute('app_wish_detail', ['id'=>$wish->getId()]);
+        }
+        return $this->render('wish/creer-wish.html.twig', [
+            'wish_form' => $wishForm,
+            'wish' => $wish,
+        ]);
+    }
+
+    #[Route('wish/delete/{id}', name:'app_wish_delete', requirements: ['id'=>'\d+'])]
+    #[IsGranted("ROLE_ADMIN")]
+    public function delete(Wish $wish, EntityManagerInterface $entityManager, Request $request):Response{
+
+        //récupération du token ajouté dans un champ caché du formulaire (le bouton supprimer)
+        //vérifier que l'utilisateur vient bien de ce bouton pour déclencher la suppression
+        $token = $request->query->get('token');
+        if($this->isCsrfTokenValid('wish_delete'.$wish->getId(), $token)){
+            $entityManager->remove($wish);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le souhait a été supprimé');
+            return $this->redirectToRoute('app_wish');
+        }
+        $this->addFlash('danger', 'Action impossible');
+        return $this->redirectToRoute('app_wish', ['id'=>$wish->getId()]);
+
+    }
+
+    //Fonction pour tester ajout catégorie au clic bouton
     #[Route('/wish/add/{id}', name: 'app_wish_add')]
     function ajouterCateg(int $id, EntityManagerInterface $entityManager){
         $category = $entityManager->getRepository(Category::class)->find(2);
