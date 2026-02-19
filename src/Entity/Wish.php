@@ -25,8 +25,6 @@ class Wish
     private ?string $description = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Email(message:"Doit être un format email valide")]
-    #[Assert\NotBlank(message: "L'auteur ne peut pas être vide")]
     private ?string $author = null;
 
     #[ORM\Column]
@@ -49,6 +47,10 @@ class Wish
      */
     #[ORM\ManyToMany(targetEntity: Category::class,  inversedBy: 'wishes')]
     private Collection $categories;
+
+    #[ORM\ManyToOne(inversedBy: 'wishes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -179,6 +181,18 @@ class Wish
         if ($this->categories->removeElement($category)) {
             $category->removeWish($this);
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

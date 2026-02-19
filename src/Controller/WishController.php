@@ -24,10 +24,10 @@ final class WishController extends AbstractController
     #[Route('/wish', name: 'app_wish')]
     public function index(WishRepository $wishRepository): Response
     {
-        $wishes2 = $wishRepository->findBy(['isPublished' => true], ['dateCreated' => 'DESC']);
+        //$wishes2 = $wishRepository->findBy(['isPublished' => true], ['dateCreated' => 'DESC']);
         $wishes = $wishRepository->findAll();
         //A FAIRE : $wishes3 = $wishRepository->findPublishedWishesWithCategories();
-        return $this->render('wish/wish.html.twig', ['wishes' => $wishes2]);
+        return $this->render('wish/wish.html.twig', ['wishes' => $wishes]);
     }
 
     #[Route('/wish/{id}', name: 'app_wish_detail', requirements: ['id' => '\d+'])]
@@ -44,12 +44,15 @@ final class WishController extends AbstractController
     #[Route('/wish/creer', name: 'app_wish_creer')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
+        //recuperer auteur
+        $author = $this->getUser();
         $wish = new Wish();
         $wishForm = $this->createForm(WishType::class, $wish);
         $wishForm->handleRequest($request);
 
         if($wishForm->isSubmitted() && $wishForm->isValid()){
            //ajouter image et classe par défaut
+            $wish->setUser($author);
             $wish->setUrl('default');
             $wish->setDateCreated(new \DateTime());
             $wish->setClass("fa-regular fa-star");

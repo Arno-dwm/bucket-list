@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block title %}Page d'accueil{% endblock %}
 {% block body%}
-    <h2>Liste de souhaits</h2>
+    <h2>Tous les souhaits</h2>
 
 
     <ul>
@@ -17,4 +17,17 @@
         {% endfor %}
         <li class="list-item"><a href="{{ path('app_wish_creer') }}">+</a></li>
     </ul>
+    {% if is_granted('IS_AUTHENTICATED') %}
+    <h2>Ma liste de souhaits</h2>
+        {% for wish in app.user.wishes %}
+            <li class="list-item">
+                <a href="{{ path('app_wish_detail', {id : wish.id}) }}"><i class="{{ wish.class }}"></i>
+                    {{ wish.title }}
+                    {% for cat in wish.categories %}
+                        [{{ cat.name }}]
+                    {% endfor %}
+                </a>
+            </li>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

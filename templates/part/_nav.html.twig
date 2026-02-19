@@ -9,7 +9,15 @@
             <div class="navbar-nav nav-container">
                 <a class="nav-item nav-link active" href="{{path('app_main')}}">Home</a>
                 <a class="nav-item nav-link" href="{{ path('app_wish') }}">Liste de souhaits</a>
-                <a class="nav-item nav-link" href="{{ path('app_wish_creer') }}">Make a wish</a>
+
+
+                {% if is_granted(('IS_AUTHENTICATED')) %}
+                    <a class="nav-item nav-link" href="{{ path('app_wish_creer') }}">Make a wish</a>
+                    <a class="nav-item nav-link" href="{{ path('app_logout') }}">Logout {{ app.user.userIdentifier }}</a>
+                {% else %}
+                    <a class="nav-item nav-link" href="{{ path('app_login') }}">Login</a>
+                    <a class="nav-item nav-link" href="{{ path('app_register') }}">Register</a>
+                {% endif %}
                 <a class="nav-item nav-link" href="{{path('app_about')}}">À propos</a>
             </div>
         </div>
